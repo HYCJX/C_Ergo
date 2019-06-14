@@ -1,3 +1,3 @@
 # C_Ergo
 
-# A logic game
+A logic game
