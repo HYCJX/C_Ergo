@@ -8,8 +8,6 @@
 #include <string.h>
 #include "dataStructures.h"
 
-static const char *OP_TO_STR[] = {"NO", "-", "&", "V", "->"};
-
 Card *newVarCard(const char c);
 
 Card *newOpCard(Operator op);

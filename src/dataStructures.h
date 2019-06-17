@@ -15,7 +15,7 @@
 enum Operator {
     NO_OPERATOR, NOT, AND, OR, IMPLIES, IFF
 };
-typdef enum Operator Operator;
+typedef enum Operator Operator;
 
 enum CardType {
     VAR, OP, PAREN, WILD_VAR, WILD_OP, TABULA_RASA, REVOLUTION, FALLACY, JUSTIFICATION, ERGO, NO_TYPE
@@ -52,13 +52,13 @@ struct BoolExpr {
     struct BoolExpr *leftExpr;
     struct BoolExpr *rightExpr;
 };
-typdef struct BoolExpr BoolExpr;
+typedef struct BoolExpr BoolExpr;
 
 struct Premise {
     Card **card;
     int size;
 };
-typdef struct Premise Premise;
+typedef struct Premise Premise;
 
 struct Player {
     int score;
@@ -68,7 +68,7 @@ struct Player {
     Card *hand[7];
     int handCtr;
 };
-typdef struct Player Player;
+typedef struct Player Player;
 
 struct GameRule {
     bool allowDoubleNeg;
@@ -76,14 +76,14 @@ struct GameRule {
     int victoryPoint;
     int key[NUM_OF_CARD_TYPE];
 };
-typdef struct GameRule GameRule;
+typedef struct GameRule GameRule;
 
 struct GameBoard {
     int numOfPlayers;
     int discardIndex;
     Premise *premise[MAX_PREMISES];
     BoolExpr *expr[MAX_PREMISES];
-    Player *player[4]
+    Player *player[4];
     Deck *deck;
     GameRule *rule;
     Card *discardPile[256];    
