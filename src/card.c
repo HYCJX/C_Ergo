@@ -28,6 +28,16 @@ Card *newSpecialCard(CardType type)
     return card;
 }
 
+Card *cloneCard(Card *card)
+{
+    if (card == NULL) return NULL;
+    Card *result = malloc(sizeof(Card));
+    result -> type = card -> type;
+    result -> CardAs = card -> CardAs;
+    result -> isDisposed = card -> isDisposed;
+    return result;
+}
+
 void opToStr(Operator op, char *dest)
 {
     strcpy(dest, OP_TO_STR[op]);
@@ -115,4 +125,39 @@ void cardToStr(Card *card, char *dest)
         default:
             break;
     }
+}
+
+void sortHand(Card *hand[], int size, int (*cmp)(Card *, Card *))
+{
+    for (int i = 0; i < size; i++) {
+        for (int j = i + 1; j < size; j++) {
+            int res = cmp(hand[i], hand[j]);
+            if (res > 0) {
+                Card *tmp = hand[i];
+                hand[i] = hand[j];
+                hand[j] = tmp;
+            }
+        }
+    }
+}
+
+int compareCard(Card *c1, Card *c2)
+{
+    if (c1 == NULL) return 1;
+    if (c2 == NULL) return -1;
+    if (c1 -> type < c2 -> type) return -1;
+    if (c1 -> type > c2 -> type) return 1;
+    switch (c1 -> type) {
+        case VAR:
+            if (c1 -> CardAs.varName > c2 -> CardAs.varName) return 1;
+            if (c1 -> CardAs.varName < c2 -> CardAs.varName) return -1;
+            return 0;
+        case OP:
+            if (c1 -> CardAs.op > c2 -> CardAs.op) return 1;
+            if (c1 -> CardAs.op < c2 -> CardAs.op) return -1;
+            return 0;
+        default:
+            break;
+    }
+    return 0;
 }
