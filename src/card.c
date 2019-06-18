@@ -81,6 +81,38 @@ void cardToStr(Card *card, char *dest)
     char temp[2];
     switch (card -> type) {
         case VAR:
-
+            temp[0] = card -> CardAs.varName;
+            temp[1] = '\0';
+            strcpy(dest, temp);
+            break;
+        case OP:
+            opToStr(card -> CardAs.op, dest);
+            break;
+        case PAREN:
+            strcpy(dest, "(");
+            break;
+        case WILD_VAR:
+            strcpy(dest, "wV");
+            break;
+        case WILD_OP:
+            strcpy(dest, "wO");
+            break;
+        case TABULA_RASA:
+            strcpy(dest, "TR");
+            break;
+        case REVOLUTION:
+            strcpy(dest, "R");
+            break;
+        case ERGO:
+            strcpy(dest, "E");
+            break;
+        case FALLACY:
+            strcpy(dest, "F");
+            break;
+        case JUSTIFICATION:
+            strcpy(dest, "J");
+            break;
+        default:
+            break;
     }
 }
