@@ -60,15 +60,15 @@ void cardToStrInLine(Card *card, char *dest)
             strcpy(dest,temp);
             break;
         case WILD_VAR:
-            char temp[4] = "w_";
-            temp[2] = card -> CardAs.varName;
+            char temp[3] = "* ";
+            temp[1] = card -> CardAs.varName;
             strcpy(dest, temp);
             break;
         case WILD_OP:
-            char temp[6] = "w_";
+            char temp[5] = "*";
             char tempOP[3] = "\0\0";
             opToStr(card -> CardAs.op, tempOP);
-            strcat(&temp[2], tempOP);
+            strcat(&temp[1], tempOP);
             strcpy(dest, temp);
             break;
         case TABULA_RASA:

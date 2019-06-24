@@ -38,9 +38,9 @@ BoolExpr *newTrueExpr()
     BoolExpr *expr = malloc(sizeof(BoolExpr));
     expr -> variable = '\0';
     expr -> op = OR;
-    expr -> leftExpr = newExpr(Not, newVariableExpr('A'), newDummyExpr());
+    expr -> leftExpr = newExpr(NOT, newVariableExpr('A'), newDummyExpr());
     expr -> rightExpr = newVariableExpr('A');
-    retur expr;
+    return expr;
 }
 
 BoolExpr *cloneBoolExpr(BoolExpr *source)
@@ -51,11 +51,11 @@ BoolExpr *cloneBoolExpr(BoolExpr *source)
     if (source -> variable != '\0') {
         return newVariableExpr(source -> variable);
     }
-    return newExpr(source => op, cloneBoolExpr(source -> leftExpr), cloneBoolExpr(source -> rightExpr));
+    return newExpr(source -> op, cloneBoolExpr(source -> leftExpr), cloneBoolExpr(source -> rightExpr));
 }
 
 //Evaluate boolean expr in accordance to the given avalCode, with its last 4 digit goes: DCBA;
-bool evalBoolExpr(BoolExpr *expr, u32int_t evalCode)
+bool evalBoolExpr(BoolExpr *expr, uint32_t evalCode)
 {
     if (expr -> variable != '\0') {
         return (bool) ((evalCode) >> (expr -> variable - 'A') & 1);
@@ -63,8 +63,8 @@ bool evalBoolExpr(BoolExpr *expr, u32int_t evalCode)
     switch (expr -> op) {
         case NOT: return !evalBoolExpr(expr -> leftExpr, evalCode);
         case AND: return evalBoolExpr(expr -> leftExpr, evalCode) & evalBoolExpr(expr -> rightExpr, evalCode);
-        case OR: return evalBoolExpr(expr -> leftExprm, evalCode) | evalBoolExpr(expr -> rightExpr, evalCode);
-        case IMPLIES: return !evalBoolExpr(expr -> leftExprm, evalCode) | evalBoolExpr(expr -> rightExpr, evalCode);
+        case OR: return evalBoolExpr(expr -> leftExpr, evalCode) | evalBoolExpr(expr -> rightExpr, evalCode);
+        case IMPLIES: return !evalBoolExpr(expr -> leftExpr, evalCode) | evalBoolExpr(expr -> rightExpr, evalCode);
         default: perror("Evaluation Error! Unknown operator!\n");
     }
     return false;
@@ -78,12 +78,12 @@ bool boolExpToStr(BoolExpr *expr, char *dest)
         strcpy(dest, resultBuffer);
         return true;
     }
-    char resultBuffer[512] = "(", left Buffer[512];
-    if (boolExpToStr(Expr -> leftExpr, leftBuffer)) {
+    char resultBuffer[512] = "(", leftBuffer[512];
+    if (boolExpToStr(expr -> leftExpr, leftBuffer)) {
         if (expr -> op == NOT) {
             strcat(resultBuffer, "~");
             strcat(resultBuffer, leftBuffer);
-            strcat(resultBufffer, ")");
+            strcat(resultBuffer, ")");
             strcpy(dest, resultBuffer);
             return true;
         }

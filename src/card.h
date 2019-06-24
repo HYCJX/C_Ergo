@@ -16,7 +16,7 @@ Card *newSpecialCard(CardType type);
 
 Card *cloneCard(Card *card);
 
-void CardTpStrInLine(Card *card, char *dest);
+void CardToStrInLine(Card *card, char *dest);
 
 void cardToStr(Card *card, char *dest);
 
