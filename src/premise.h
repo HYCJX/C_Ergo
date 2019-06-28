@@ -11,7 +11,7 @@
 
 bool putCardtoPremise(Premise *premise, Card *card, int index);
 
-bool applyRevolution(Premise *premise, int index);
+bool applyRevolution(Premise *premise1, int index1, Premise *premise2, int index2);
 
 BoolExpr *buildBoolExpr(Premise *premise, bool *valid);
 

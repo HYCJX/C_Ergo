@@ -6,14 +6,91 @@ static int compare(Operator a, Operator b)
     if (a == b) return 0;
 }
 
-//Functioning part
-bool putCardtoPremise(Premise *premise, Card *card, int index);
+static BoolExpr *buildhelper(Premise *premise, int start, int end, bool *valid)
+{
+    if (start == end && (premise -> card[start] -> type == VAR || premise -> card[start] -> type == WILD_VAR)) {
+        return newVariableExpr(premise -> card[start] -> CardAs.varName);
+    } else if (start < end) {
+        Card **card = premise -> card;
+        
+    } 
+}
 
-bool applyRevolution(Premise *premise, int index);
+//Functions
 
-BoolExpr *buildBoolExpr(Premise *premise, bool *valid);
+//Index 0 means in front of all cards.
+//Index n means after the (n - 1)th card in the premise.
+bool putCardtoPremise(Premise *premise, Card *card, int index)
+{
+    if (index < 0 || index > premise -> size) return false;
+    for (int i = premise -> size; i >= index; i--) {
+        premise -> card[i] = premise -> card[i - 1];
+    }
+    premise -> card[index] = card;
+    premise -> size++;
+    return true;
+}
 
-Card *applyTabulaRasa(Premise *premise, int index);
+//NEED TO FREE ??? ???
+bool applyRevolution(Premise *premise1, int index1, Premise *premise2, int index2)
+{
+    if (index1 >= premise1 -> size || index2 >=  premise2 -> size) {
+        printf("The index is out of bound.\n");
+        return false;
+    }
+    Card *card1 = premise1 -> card[index1];
+    Card *card2 = premise2 -> card[index2];
+    if (card1 && card2 && card1 -> type == card2 -> type) {
+        Card *temp = card1;
+        premise1 -> card[index1] = card2;
+        premise2 -> card[index2] = temp;
+        return true;
+    }
+    printf("Two cards are not of the same type!\n");
+    return false;
+}
+
+//Build boolean expression from premise if possible and return the evaluated boolExpr.
+BoolExpr *buildBoolExpr(Premise *premise, bool *valid)
+{
+    if (premise -> size == 0) {
+        *valid = true;
+        return newTrueExpr();
+    }
+    int parenCounter = 0;
+    for (int i = 0; i < premise -> size; i++) {
+        if (premise -> card[i] -> type == PAREN) {
+            parenCounter += premise -> card[i] -> CardAs.isLeft ? 1 : -1;
+        }
+        if (parenCounter < 0) {
+            printf("One right parenthesis cannot find its other half!\n");
+            *valid = false;
+            return newDummyExpr();
+        }
+    }
+    if (parenCounter == 0) {
+        return buildhelper(premise, 0, premise -> size - 1, valid);
+    }
+    printf("Unpaired parentheses! Not a valid premise!\n");
+    *valid = false;
+    return newDummyExpr();
+}
+
+//Remove the given variable card and return the pointer of the card.
+Card *applyTabulaRasa(Premise *premise, int index)
+{
+    if (premise == NULL ||index >= premise -> size) {
+        printf("The index is out of bound.\n");
+        return NULL;
+    }
+    Card *result = premise -> card[index];
+    for (int i = index + 1; i < premise -> size; i++) {
+        premise -> card[i - 1] = premise -> card[i];
+    }
+    premise -> size--;
+    premise -> card[premise -> size] = NULL;
+    return result;
+}
 
 Premise *newPremise(void)
 {
@@ -26,7 +103,16 @@ Premise *newPremise(void)
     return premise;
 }
 
-Premise *clonePremise(Premise *source);
+Premise *clonePremise(Premise *source)
+{
+    if (source == NULL) return NULL;
+    Premise *result = newPremise();
+    for (int i = 0; i < MAX_PREMISE__LENGTH; i++) {
+        result -> card[i] = cloneCard(source -> card[i]);
+    }
+    result -> size = source -> size;
+    return result;
+}
 
 void printlnPremise(Premise *premise)
 {
@@ -38,4 +124,10 @@ void printlnPremise(Premise *premise)
     printf("\n");
 }
 
-void freePremise(Premise *premise);
+//WHY NOT FREE EVERY CARD ???
+void freePremise(Premise *premise)
+{
+    if (premise == NULL) return;
+    free(premise -> card);
+    free(premise);
+}
