@@ -6,14 +6,73 @@ static int compare(Operator a, Operator b)
     if (a == b) return 0;
 }
 
+//WHERE IS IFF ??? ???
+//WHY ALL *VALID IS FALSE ???
 static BoolExpr *buildhelper(Premise *premise, int start, int end, bool *valid)
 {
     if (start == end && (premise -> card[start] -> type == VAR || premise -> card[start] -> type == WILD_VAR)) {
         return newVariableExpr(premise -> card[start] -> CardAs.varName);
     } else if (start < end) {
         Card **card = premise -> card;
+        Operator op = NO_OPERATOR;
+        int indexOfOp = -1;   //index of the most significant operator (MSO)
+        int indexOfFLP = -1;  //index of first left parenthesis
+        int indexOfFMRP = -1; //index of first matched right parenthesis
         
-    } 
+        //Find and update MSO and the three indices:
+        int parenCounter = 0;
+        for (int i = start; i <= end; i++) {
+            CardType type = card[i] -> type;
+            //Parentheses dealing:
+            if (type == PAREN) {
+                bool isLeft = card[i] -> CardAs.isLeft;
+                //Initialize index for the first left parenthesis: 
+                if (indexOfFLP == -1 && isLeft) {
+                    indexOfFLP = i;
+                }
+                //Update the value of parenCounter:
+                parenCounter += isLeft ? 1 : -1;
+                //Initialize index for the matched right parenthesis of the first left parenthesis:
+                if (indexOfFMRP == -1 && parenCounter == 0) {
+                    indexOfFMRP = i;
+                }
+            }
+            if (parenCounter == 0) {
+                if ((type == OP || type == WILD_OP) && card[i] -> CardAs.op > op) {
+                    op = card[i] -> CardAs.op;
+                    indexOfOp = i;
+                }
+            }
+        }
+
+        //If the expression looks like: (<exp>) and the first and the last parentheses are matched, evaluate <exp>.
+        if (indexOfFLP == start && indexOfFMRP == end) {
+            return buildHelper(premise, start + 1, end -1, valid);
+        }
+
+        //Check op:
+        switch (op) {
+            case NOT:
+            //If NOT is the MSO, then the form of the premise is: ~<var> or ~(<exp>).
+                if (indexOfOp == start) {
+                    CardType nextCardType = card[indexOfOp + 1] -> type;
+                    if (nextCardType == VAR || nextCardType == WILD_VAR || nextCardType == PAREN) {
+                        return newExpr(NOT, buildHelper(premise, indexOfOp + 1, end, valid), newTrueExpr());
+                    }
+                }
+                //Else there is an error in type.
+                printf("NOT error.\n");
+                break;
+            case AND:
+            case OR:
+            case IMPLIES:
+                return newExpr(op, buildHelper(premise, start, indexOfOp - 1, valid), buildHelper(premise, indexOfOp + 1, end, valid));
+            default:
+                break;
+        }
+    }
+    *valid = false;
+    return newDummyExpr;
 }
 
 //Functions
