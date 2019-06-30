@@ -73,6 +73,8 @@ typedef struct Player Player;
 struct GameRule {
     bool allowDoubleNeg;
     bool allowParadoxVictory;
+    int fallacyPenalty;
+    int switchPauseDuration;
     int victoryPoint;
     int key[NUM_OF_CARD_TYPE];
 };

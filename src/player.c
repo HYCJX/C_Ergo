@@ -1,6 +1,6 @@
 #include "player.h"
 
-//WHERE IS FIND CARD IN HAND ???
+//WHERE IS findCardInHand ??? ???
 
 static const int INITIAL_CARD_NUM = 7;
 
