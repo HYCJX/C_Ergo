@@ -8,7 +8,23 @@
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
+#include "dataStructures.h"
+#include "premise.h"
 
-#include "gameBoard.h""
+char inputSingleChar(const char *reminder);
+
+char **tokenize(char *line);
+
+void clearScreen();
+
+void pauseBeforeSwitchTurn(GameBoard *board, Player *player, int time);
+
+void printBaordtoPlayer(GameBoard *board, Player *player);
+
+void printFalIfAvailable(Player *player);
+
+void printPremises(GameBoard *board);
+
+void printScoreBoard(GameBoard *board);
 
 #endif
