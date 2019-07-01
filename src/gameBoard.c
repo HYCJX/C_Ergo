@@ -68,6 +68,30 @@ static insOpcode getInsOpcode(char *str)
     return OP_END;
 }
 
+//Functions
+bool buildExprFromPremises(GameBoard *board);
+
+bool execCommand(GameBoard *board, Player *player, char **tokens, bool *isTerminated);
+
+GameBoard *newBoard(GameRule *rule, int playerNum);
+
+GameBoard *cloneBoard(GameBoard *source);
+
+void dispose(GameBoard *board, Player *player);
+
+void extractScores(GameBoard *board, int *dest)
+{
+    for (int i = 0; i < board -> numOfPlayers; i++) {
+        dest[i] = board -> player[i] -> score;
+    }
+}
+
+void finalEval(GameBoard *board);
+
+void freeBoard(GameBoard *board);
+
+void startNewRound(GameBoard *board);
+
 void updateScores(GameBoard *board, const int source[MAX_PLAYERS])
 {
     for (int i = 0; i < board -> numOfPlayers; i++) {

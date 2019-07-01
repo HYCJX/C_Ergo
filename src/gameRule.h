@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "dataStructures.h"
+#include "IOUtils.h"
 
 GameRule *newGameRule();
 

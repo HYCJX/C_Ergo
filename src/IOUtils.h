@@ -11,6 +11,8 @@
 #include "dataStructures.h"
 #include "premise.h"
 
+#define VERSION_NAME "0.2.4"
+
 char inputSingleChar(const char *reminder);
 
 char **tokenize(char *line);
@@ -26,5 +28,9 @@ void printFalIfAvailable(Player *player);
 void printPremises(GameBoard *board);
 
 void printScoreBoard(GameBoard *board);
+
+void easterEgg();
+
+void ruleHelpNotification();
 
 #endif

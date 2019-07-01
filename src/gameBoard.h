@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "dataStructures.h"
+#include "gameRule.h"
+#include "IOUtils.h"
 
 bool buildExprFromPremises(GameBoard *board);
 
