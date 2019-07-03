@@ -1,12 +1,10 @@
-#ifndef _GAME_RULE_
-#define _GAME_RULE_
+//
+// Created by zy7218 on 05/06/19.
+//
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <ctype.h>
-#include <string.h>
+#ifndef CERGO_GAMERULE_H
+#define CERGO_GAMERULE_H
+
 #include "dataStructures.h"
 #include "IOUtils.h"
 
@@ -16,4 +14,4 @@ GameRule *cloneGameRule(GameRule *source);
 
 void setGameRule(GameRule *rule);
 
-#endif
+#endif //CERGO_GAMERULE_H

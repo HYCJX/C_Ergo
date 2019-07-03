@@ -1,16 +1,17 @@
 #ifndef _CERGO_DATA_STRUCTURES_
 #define _CERGO_DATA_STRUCTURES_
 
-#include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+
 
 #define DEBUG (true)
-#define MAX_PREMISE__LENGTH (64)
+
+#define MAX_PREMISE_LENGTH (64)
 #define NUM_OF_CARD_TYPE (13)
 #define MAX_PLAYERS (4)
 #define MAX_PREMISES (4)
-#define FIND_FAIL (-1)
 
 enum Operator {
     NO_OPERATOR, NOT, AND, OR, IMPLIES, IFF
@@ -18,7 +19,9 @@ enum Operator {
 typedef enum Operator Operator;
 
 enum CardType {
-    VAR, OP, PAREN, WILD_VAR, WILD_OP, TABULA_RASA, REVOLUTION, FALLACY, JUSTIFICATION, ERGO, NO_TYPE
+    VAR, OP, PAREN, WILD_VAR, WILD_OP,
+    TABULA_RASA, REVOLUTION, FALLACY, JUSTIFICATION, ERGO,
+    NO_TYPE
 };
 typedef enum CardType CardType;
 
@@ -28,7 +31,7 @@ struct Card {
         char varName;
         Operator op;
         bool isLeft;
-    } CardAs;
+    }CardAs;
     bool isDisposed;
 };
 typedef struct Card Card;
@@ -45,6 +48,7 @@ struct Deck {
     int size;
 };
 typedef struct Deck Deck;
+
 
 struct BoolExpr {
     char variable;
@@ -70,27 +74,36 @@ struct Player {
 };
 typedef struct Player Player;
 
+
+
 struct GameRule {
     bool allowDoubleNeg;
     bool allowParadoxVictory;
+    int victoryPoint;
     int fallacyPenalty;
     int switchPauseDuration;
-    int victoryPoint;
     int key[NUM_OF_CARD_TYPE];
 };
 typedef struct GameRule GameRule;
 
 struct GameBoard {
+
     int numOfPlayers;
     int discardIndex;
+
     Premise *premise[MAX_PREMISES];
     BoolExpr *expr[MAX_PREMISES];
     Player *player[4];
     Deck *deck;
+
     GameRule *rule;
-    Card *discardPile[256];    
+    Card *discardPile[256];
+
 };
 typedef struct GameBoard GameBoard;
+
+
+#define FIND_FAIL (-1)
 
 enum insOpcode {
     //direct put
@@ -111,5 +124,6 @@ enum insOpcode {
     OP_END
 };
 typedef enum insOpcode insOpcode;
+
 
 #endif

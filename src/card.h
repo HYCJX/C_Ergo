@@ -1,27 +1,17 @@
-#ifndef _CARD_
-#define _CARD_
+#ifndef _ERGO_CARD_
+#define _ERGO_CARD_
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
 #include "dataStructures.h"
 
-Card *newVarCard(const char c);
-
-Card *newOpCard(Operator op);
-
-Card *newSpecialCard(CardType type);
-
-Card *cloneCard(Card *card);
-
-void CardToStrInLine(Card *card, char *dest);
-
+void cardToStrInLine(Card *card, char *dest);
 void cardToStr(Card *card, char *dest);
 
-void sortHand(Card *hand[], int size, int (*cmp) (Card*, Card*));
+Card *newVarCard(const char c);
+Card *newOpCard(Operator op);
+Card *newSpecialCard(CardType type);
+Card *cloneCard(Card *card);
 
 int compareCard(Card *c1, Card *c2);
+void sortHand(Card *hand[], int size, int (*cmp) (Card*, Card*));
 
 #endif

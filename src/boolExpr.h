@@ -1,11 +1,8 @@
-#ifndef _BOOL_EXPR_
-#define _BOOL_EXPR_
+#ifndef _BOOLEAN_EXPRESSION_
+#define _BOOLEAN_EXPRESSION_
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
 #include <stdint.h>
-#include <string.h>
+#include <stdbool.h>
 #include "dataStructures.h"
 
 BoolExpr *newVariableExpr(const char name);
