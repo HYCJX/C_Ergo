@@ -68,7 +68,9 @@ BoolExpr *cloneBoolExpr(BoolExpr *source)
     return newExpr(source->op, cloneBoolExpr(source->leftExpr), cloneBoolExpr(source->rightExpr));
 }
 
-//Construct a BoolExpr that uses NO_OPERATOR.
+/*---Four Constructors---*/
+
+//1. Construct a BoolExpr that uses NO_OPERATOR.
 BoolExpr* newDummyExpr()
 {
     BoolExpr *expr = malloc(sizeof(BoolExpr));;
@@ -79,7 +81,7 @@ BoolExpr* newDummyExpr()
     return expr;
 }
 
-//Construct a new non-variable BoolExpr from arguments.
+//2. Construct a new non-variable BoolExpr from arguments.
 BoolExpr* newExpr(Operator op, BoolExpr *left, BoolExpr *right)
 {
     BoolExpr *expr = malloc(sizeof(BoolExpr));
@@ -90,7 +92,7 @@ BoolExpr* newExpr(Operator op, BoolExpr *left, BoolExpr *right)
     return expr;
 }
 
-//Construct (A V ~A).
+//3. Construct (A V ~A).
 BoolExpr* newTrueExpr()
 {
     BoolExpr *expr = malloc(sizeof(BoolExpr));;
@@ -101,7 +103,7 @@ BoolExpr* newTrueExpr()
     return expr;
 }
 
-//Construct a new variabel BoolExpr.
+//4. Construct a new variabel BoolExpr.
 BoolExpr *newVariableExpr(const char name)
 {
     BoolExpr *expr = malloc(sizeof(BoolExpr));

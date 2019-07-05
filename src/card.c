@@ -1,22 +1,42 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "card.h"
-#include "dataStructures.h"
 
 static const char *OP_TO_STR[] = {"NO", "~", "&", "V", "->"};
 
-Card *newVarCard(const char c) {
-    Card *card = malloc(sizeof(Card));
-    card->type = VAR;
-    card->CardAs.varName = c;
-    card->isDisposed = false;
-    return card;
+//Define the priority of Cards.
+int compareCard(Card *c1, Card *c2) {
+    if (c1 == NULL) return 1;
+    if (c2 == NULL) return -1;
+    if (c1->type < c2->type) return -1;
+    if (c1->type > c2->type) return 1;
+    // Assert c1->type = c2->type.
+    switch (c1->type) {
+        case VAR:
+            if (c1->CardAs.varName > c2->CardAs.varName) return 1;
+            if (c1->CardAs.varName < c2->CardAs.varName) return -1;
+            return 0;
+        case OP:
+            if (c1->CardAs.op > c2->CardAs.op) return 1;
+            if (c1->CardAs.op < c2->CardAs.op) return -1;
+            return 0;
+        default:
+            break;
+    }
+    return 0;
 }
 
+//Return a new deeply cloned Card of @param card.
+Card *cloneCard(Card *card) {
+    if (card == NULL) return NULL;
+    Card *result = malloc(sizeof(Card));
+    result->type = card->type;
+    result->CardAs = card->CardAs;
+    result->isDisposed = card->isDisposed;
+    return result;
+}
+
+/*---Three constructors---*/
+
+//1. Construct a new operator card.
 Card *newOpCard(Operator op) {
     Card *card = malloc(sizeof(Card));
     card->type = OP;
@@ -25,6 +45,7 @@ Card *newOpCard(Operator op) {
     return card;
 }
 
+//2. Construct a new special card.
 Card *newSpecialCard(CardType type) {
     Card *card = malloc(sizeof(Card));
     card->type = type;
@@ -32,9 +53,21 @@ Card *newSpecialCard(CardType type) {
     return card;
 }
 
-void opToStr(Operator op, char *dest) {
+//3. Construct a new variable card.
+Card *newVarCard(const char c) {
+    Card *card = malloc(sizeof(Card));
+    card->type = VAR;
+    card->CardAs.varName = c;
+    card->isDisposed = false;
+    return card;
+}
+
+//A helper function that stores the string representation of op in @param dest.
+static void opToStr(Operator op, char *dest) {
     strcpy(dest, OP_TO_STR[op]);
 }
+
+/*---Two functions that offer string representations of Cards---*/
 
 void cardToStrInLine(Card *card, char *dest) {
     switch (card->type) {
@@ -123,49 +156,7 @@ void cardToStr(Card *card, char *dest) {
     }
 }
 
-Card *cloneCard(Card *card) {
-    if (card == NULL) return NULL;
-    Card *result = malloc(sizeof(Card));
-    result->type = card->type;
-//    switch (result->type) {
-//        case VAR:
-//            result->CardAs.varName = card->CardAs.varName;
-//            break;
-//        case OP:
-//            result->CardAs.op = card->CardAs.op;
-//            break;
-//        case PAREN:
-//            result->CardAs.isLeft = card->CardAs.isLeft;
-//            break;
-//    }
-    result->CardAs = card->CardAs;
-    result->isDisposed = card->isDisposed;
-
-    return result;
-
-}
-
-int compareCard(Card *c1, Card *c2) {
-    if (c1 == NULL) return 1;
-    if (c2 == NULL) return -1;
-    if (c1->type < c2->type) return -1;
-    if (c1->type > c2->type) return 1;
-    // assert c1->type = c2->type
-    switch (c1->type) {
-        case VAR:
-            if (c1->CardAs.varName > c2->CardAs.varName) return 1;
-            if (c1->CardAs.varName < c2->CardAs.varName) return -1;
-            return 0;
-        case OP:
-            if (c1->CardAs.op > c2->CardAs.op) return 1;
-            if (c1->CardAs.op < c2->CardAs.op) return -1;
-            return 0;
-        default:
-            break;
-    }
-    return 0;
-}
-
+//Sort Cards according to their priorities.
 void sortHand(Card *hand[], int size, int (*cmp)(Card *, Card *)) {
     for (int i = 0; i < size; i++) {
         for (int j = i + 1; j < size; j++) {
