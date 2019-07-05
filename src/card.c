@@ -3,7 +3,8 @@
 static const char *OP_TO_STR[] = {"NO", "~", "&", "V", "->"};
 
 //Define the priority of Cards.
-int compareCard(Card *c1, Card *c2) {
+int compareCard(Card *c1, Card *c2)
+{
     if (c1 == NULL) return 1;
     if (c2 == NULL) return -1;
     if (c1->type < c2->type) return -1;
@@ -25,7 +26,8 @@ int compareCard(Card *c1, Card *c2) {
 }
 
 //Return a new deeply cloned Card of @param card.
-Card *cloneCard(Card *card) {
+Card *cloneCard(Card *card)
+{
     if (card == NULL) return NULL;
     Card *result = malloc(sizeof(Card));
     result->type = card->type;
@@ -37,7 +39,8 @@ Card *cloneCard(Card *card) {
 /*---Three constructors---*/
 
 //1. Construct a new operator card.
-Card *newOpCard(Operator op) {
+Card *newOpCard(Operator op)
+{
     Card *card = malloc(sizeof(Card));
     card->type = OP;
     card->CardAs.op = op;
@@ -46,7 +49,8 @@ Card *newOpCard(Operator op) {
 }
 
 //2. Construct a new special card.
-Card *newSpecialCard(CardType type) {
+Card *newSpecialCard(CardType type)
+{
     Card *card = malloc(sizeof(Card));
     card->type = type;
     card->isDisposed = false;
@@ -54,7 +58,8 @@ Card *newSpecialCard(CardType type) {
 }
 
 //3. Construct a new variable card.
-Card *newVarCard(const char c) {
+Card *newVarCard(const char c)
+{
     Card *card = malloc(sizeof(Card));
     card->type = VAR;
     card->CardAs.varName = c;
@@ -63,13 +68,15 @@ Card *newVarCard(const char c) {
 }
 
 //A helper function that stores the string representation of op in @param dest.
-static void opToStr(Operator op, char *dest) {
+static void opToStr(Operator op, char *dest)
+{
     strcpy(dest, OP_TO_STR[op]);
 }
 
 /*---Two functions that offer string representations of Cards---*/
 
-void cardToStrInLine(Card *card, char *dest) {
+void cardToStrInLine(Card *card, char *dest)
+{
     switch (card->type) {
         case VAR: {
             char temp[2] = "\0";
@@ -116,7 +123,8 @@ void cardToStrInLine(Card *card, char *dest) {
     }
 }
 
-void cardToStr(Card *card, char *dest) {
+void cardToStr(Card *card, char *dest)
+{
     char temp[2];
     switch (card->type) {
         case VAR:
@@ -157,7 +165,8 @@ void cardToStr(Card *card, char *dest) {
 }
 
 //Sort Cards according to their priorities.
-void sortHand(Card *hand[], int size, int (*cmp)(Card *, Card *)) {
+void sortHand(Card *hand[], int size, int (*cmp)(Card *, Card *))
+{
     for (int i = 0; i < size; i++) {
         for (int j = i + 1; j < size; j++) {
             int res = cmp(hand[i], hand[j]);

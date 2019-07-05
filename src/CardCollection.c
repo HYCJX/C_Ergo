@@ -1,14 +1,23 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include <time.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
 #include "cardCollection.h"
 
+//Return the first Card on the @param deck.
+Card *drawOneCard(Deck *deck)
+{
+    if (deck->size == 0) return NULL;
+    DeckNode *tmp = deck->head;
+    Card *card = tmp->card;
+    deck->head = deck->head->next;
+    deck->size--;
+    free(tmp);
 
-Deck* newDeck(void) {
+    return card;
+}
+
+/*---Two helper constructors---*/
+
+//1. A helper function that constructs a new Deck.
+static Deck* newDeck(void)
+{
     Deck *deck = malloc(sizeof(Deck));
     deck->head = NULL;
     deck->tail = NULL;
@@ -16,51 +25,47 @@ Deck* newDeck(void) {
     return deck;
 }
 
-static DeckNode* newDeckNode(Card *card) {
+//2. A helper function that constructs a new DeckNode from @param card.
+static DeckNode* newDeckNode(Card *card)
+{
     DeckNode *node = malloc(sizeof(DeckNode));
     node->card = card;
     node->next = NULL;
     return node;
 }
 
-void addCardtoTail(Deck *deck, Card* card) {
-    DeckNode *node = newDeckNode(card);
-    if (deck->size == 0) {
-        deck->head = node;
-        deck->tail = node;
-    } else {
-        deck->tail->next = node;
-        deck->tail = node;
-    }
-    deck->size++;
-}
-
-void insertCardtoDeck(Deck *deck, Card* card, int index) {
-    if (index > deck->size) return;
-    DeckNode *node = newDeckNode(card);
-    DeckNode *curr = deck->head;
-    deck->size++;
-    if (index == 0) {
-        deck->head = node;
-        node->next = curr;
-        return;
-    }
-    for (int i = 1; i < index; i++) {
-        curr = curr->next;
-    }
-    DeckNode *succ = curr->next;
-    curr->next = node;
-    node->next = succ;
-}
-
-void resetTail(Deck *deck) {
+//A helper function that resets the tail of @param deck.
+static void resetTail(Deck *deck)
+{
     DeckNode *node = deck->head;
     if (node == NULL) return;
     for (; node->next; node = node->next);
     deck->tail = node;
 }
 
-Deck* initializeDeck(const int key[NUM_OF_CARD_TYPE]) {
+//Return a new deeply cloned Deck of @param source.
+Deck *cloneDeck(Deck *source)
+{
+    if (source == NULL) return NULL;
+    Deck *deck = newDeck();
+    if (source->size == 0) return deck;
+    DeckNode *curr = source->head;
+    deck->head = newDeckNode(cloneCard(curr->card));
+    DeckNode *p = deck->head;
+    curr = curr->next;
+    while (curr) {
+        p->next = newDeckNode(cloneCard(curr->card));
+        p = p->next;
+        curr = curr->next;
+    }
+    resetTail(deck);
+    deck->size = source->size;
+    return deck;
+}
+
+//Initialize the Deck at the beginning of a game.
+Deck *initializeDeck(const int key[NUM_OF_CARD_TYPE])
+{
     int varNum = key[0];
     int notNum = key[1];
     int andNum = key[2];
@@ -128,13 +133,13 @@ Deck* initializeDeck(const int key[NUM_OF_CARD_TYPE]) {
     printf("Initializing deck\n");
     //Shuffle 
     //This random approach is daft but c is daft anyway...
-    // Seed warehouse
-    //  7: start with ergo
+    //Seed warehouse
+    //7: start with ergo
     int seed = (int) time(NULL);
     if (DEBUG) {
         printf("DEBUG: seed = %d\n", seed);
     }
-//    srand(DEBUG ? 7 : );
+    //srand(DEBUG ? 7 : );
     srand(seed);
     Deck *deck = newDeck();
     for (int i = total - 1; i >= 0; i--) {
@@ -146,7 +151,53 @@ Deck* initializeDeck(const int key[NUM_OF_CARD_TYPE]) {
     return deck;
 }
 
-void deckToStr(Deck *deck, char *dest) {
+//Add a @param card to the Tail of @param deck.
+void addCardtoTail(Deck *deck, Card *card)
+{
+    DeckNode *node = newDeckNode(card);
+    if (deck->size == 0) {
+        deck->head = node;
+        deck->tail = node;
+    } else {
+        deck->tail->next = node;
+        deck->tail = node;
+    }
+    deck->size++;
+}
+
+//Free the @param deck and every Card on it.
+void freeDeck(Deck *deck)
+{
+    while (deck->size > 0) {
+        free(drawOneCard(deck));
+    }
+    free(deck);
+}
+
+/*
+void insertCardtoDeck(Deck *deck, Card *card, int index)
+{
+    if (index > deck->size) return;
+    DeckNode *node = newDeckNode(card);
+    DeckNode *curr = deck->head;
+    deck->size++;
+    if (index == 0) {
+        deck->head = node;
+        node->next = curr;
+        return;
+    }
+    for (int i = 1; i < index; i++) {
+        curr = curr->next;
+    }
+    DeckNode *succ = curr->next;
+    curr->next = node;
+    node->next = succ;
+}
+
+
+
+void deckToStr(Deck *deck, char *dest)
+{
     char temp[512] = "\0";
     // printf("%d\n", deck->size);
     if (deck->size > 0) {
@@ -161,58 +212,24 @@ void deckToStr(Deck *deck, char *dest) {
     }
     strcpy(dest, temp);
 }
+*/
 
-Deck* cloneDeck(Deck* source) {
-    if (source == NULL) return NULL;
-    Deck *deck = newDeck();
-    if (source->size == 0) return deck;
-    DeckNode *curr = source->head;
-    deck->head = newDeckNode(cloneCard(curr->card));
-    DeckNode *p = deck->head;
-    curr = curr->next;
-    while (curr) {
-        p->next = newDeckNode(cloneCard(curr->card));
-        p = p->next;
-        curr = curr->next;
-    }
-    resetTail(deck);
-    deck->size = source->size;
-    return deck;
+/*
+DEBUG
+int main(void) {
+   int key[] = {4, 6, 4, 4, 4, 0, 8, 1, 1, 1, 1, 3, 3};
+   Deck *deck = initializeDeck(key);
+   printf("All is good!\n");
+   char str[512];
+   deckToStr(deck, str);
+   printf("%s\n", str);
+   printf("%d, %ld\n", deck->size, strlen(str));
+   Deck *clone = cloneDeck(deck);
+   deckToStr(deck, str);
+   printf("%s\n", str);
+   printf("%d, %ld\n", deck->size, strlen(str));
+   freeDeck(clone);
+   freeDeck(deck);
+   return 0;
 }
-
-Card* drawOneCard(Deck *deck) {
-    if (deck->size == 0) return NULL;
-    DeckNode *tmp = deck->head;
-    Card *card = tmp->card;
-    deck->head = deck->head->next;
-    deck->size--;
-    free(tmp);
-
-    return card;
-}
-
-void freeDeck(Deck *deck) {
-    while (deck->size > 0) {
-        free(drawOneCard(deck));
-    }
-    free(deck);
-}
-
-
-//DEBUG
-//int main(void) {
-//    int key[] = {4, 6, 4, 4, 4, 0, 8, 1, 1, 1, 1, 3, 3};
-//    Deck *deck = initializeDeck(key);
-//    printf("All is good!\n");
-//    char str[512];
-//    deckToStr(deck, str);
-//    printf("%s\n", str);
-//    printf("%d, %ld\n", deck->size, strlen(str));
-//    Deck *clone = cloneDeck(deck);
-//    deckToStr(deck, str);
-//    printf("%s\n", str);
-//    printf("%d, %ld\n", deck->size, strlen(str));
-//    freeDeck(clone);
-//    freeDeck(deck);
-//    return 0;
-//}
+*/
