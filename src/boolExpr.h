@@ -1,23 +1,26 @@
 #ifndef _BOOLEAN_EXPRESSION_
 #define _BOOLEAN_EXPRESSION_
 
-#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
 #include "dataStructures.h"
 
-BoolExpr *newVariableExpr(const char name);
-
-BoolExpr *newExpr(Operator op, BoolExpr *left, BoolExpr *right);
-
-BoolExpr *newDummyExpr();
-
-BoolExpr *newTrueExpr();
-
-BoolExpr *cloneBoolExpr(BoolExpr *source);
+bool boolExpToStr(BoolExpr *expr, char *dest);
 
 bool evalBoolExpr(BoolExpr *expr, uint32_t evalCode);
 
-bool boolExpToStr(BoolExpr *expr, char *dest);
+BoolExpr *cloneBoolExpr(BoolExpr *source);
+
+BoolExpr *newDummyExpr();
+
+BoolExpr *newExpr(Operator op, BoolExpr *left, BoolExpr *right);
+
+BoolExpr *newTrueExpr();
+
+BoolExpr *newVariableExpr(const char name);
 
 void freeBoolExpr(BoolExpr *expr);
 

@@ -5,18 +5,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-
 #define DEBUG (true)
-
-#define MAX_PREMISE_LENGTH (64)
-#define NUM_OF_CARD_TYPE (13)
+#define FIND_FAIL (-1)
 #define MAX_PLAYERS (4)
 #define MAX_PREMISES (4)
+#define MAX_PREMISE_LENGTH (64)
+#define NUM_OF_CARD_TYPE (13)
 
-enum Operator {
-    NO_OPERATOR, NOT, AND, OR, IMPLIES, IFF
-};
-typedef enum Operator Operator;
+/*-----Enumerations-----*/
 
 enum CardType {
     VAR, OP, PAREN, WILD_VAR, WILD_OP,
@@ -24,86 +20,6 @@ enum CardType {
     NO_TYPE
 };
 typedef enum CardType CardType;
-
-struct Card {
-    CardType type;
-    union {
-        char varName;
-        Operator op;
-        bool isLeft;
-    }CardAs;
-    bool isDisposed;
-};
-typedef struct Card Card;
-
-struct DeckNode {
-    Card *card;
-    struct DeckNode *next;
-};
-typedef struct DeckNode DeckNode;
-
-struct Deck {
-    DeckNode *head;
-    DeckNode *tail;
-    int size;
-};
-typedef struct Deck Deck;
-
-
-struct BoolExpr {
-    char variable;
-    Operator op;
-    struct BoolExpr *leftExpr;
-    struct BoolExpr *rightExpr;
-};
-typedef struct BoolExpr BoolExpr;
-
-struct Premise {
-    Card **card;
-    int size;
-};
-typedef struct Premise Premise;
-
-struct Player {
-    int score;
-    int fallacyCtr;
-    char chosenVar;
-    bool isJustified;
-    Card *hand[7];
-    int handCtr;
-};
-typedef struct Player Player;
-
-
-
-struct GameRule {
-    bool allowDoubleNeg;
-    bool allowParadoxVictory;
-    int victoryPoint;
-    int fallacyPenalty;
-    int switchPauseDuration;
-    int key[NUM_OF_CARD_TYPE];
-};
-typedef struct GameRule GameRule;
-
-struct GameBoard {
-
-    int numOfPlayers;
-    int discardIndex;
-
-    Premise *premise[MAX_PREMISES];
-    BoolExpr *expr[MAX_PREMISES];
-    Player *player[4];
-    Deck *deck;
-
-    GameRule *rule;
-    Card *discardPile[256];
-
-};
-typedef struct GameBoard GameBoard;
-
-
-#define FIND_FAIL (-1)
 
 enum insOpcode {
     //direct put
@@ -125,5 +41,102 @@ enum insOpcode {
 };
 typedef enum insOpcode insOpcode;
 
+//Operators enumerated in decreasing priority
+enum Operator {
+    NO_OPERATOR, NOT, AND, OR, IMPLIES, IFF
+};
+typedef enum Operator Operator;
+
+/*-----Structures-----*/
+
+/*---Basic level---*/
+
+//Logic expressions
+struct BoolExpr {
+    char variable;
+    Operator op;
+    struct BoolExpr *leftExpr;
+    struct BoolExpr *rightExpr;
+};
+typedef struct BoolExpr BoolExpr;
+
+//Game cards
+struct Card {
+    CardType type;
+    union {
+        bool isLeft;  //For parentheses
+        char varName; //For variables
+        Operator op;  //For operators
+    }CardAs;
+    bool isDisposed;
+};
+typedef struct Card Card;
+
+/*---Intermediate level---*/
+
+//Deck of cards to be drawn
+//Linked list that stores Cards
+struct DeckNode {
+    Card *card;
+    struct DeckNode *next;
+};
+typedef struct DeckNode DeckNode;
+
+struct Deck {
+    DeckNode *head;
+    DeckNode *tail;
+    int size;
+};
+typedef struct Deck Deck;
+
+//Rule status
+struct GameRule {
+    bool allowDoubleNeg;
+    bool allowParadoxVictory;
+    int fallacyPenalty;
+    int switchPauseDuration;
+    int victoryPoint;
+    int key[NUM_OF_CARD_TYPE];
+};
+typedef struct GameRule GameRule;
+
+//Game players
+struct Player {
+    bool isJustified;
+    char chosenVar;
+    int fallacyCtr;
+    int handCtr;
+    int score;
+    Card *hand[7];
+};
+typedef struct Player Player;
+
+//Unevaluated logical expressions
+//Array of Cards
+struct Premise {
+    Card **card;
+    int size;
+};
+typedef struct Premise Premise;
+
+/*---Highest level*/
+
+struct GameBoard {
+
+    //Two counters:
+    int numOfPlayers;
+    int discardIndex;
+
+    //Four objects
+    Card *discardPile[256];         //1. Discarded cards
+    Deck *deck;                     //2. Undrawn cards
+    Player *player[4];              //3. Players
+    Premise *premise[MAX_PREMISES]; //4. Logical expressions
+    BoolExpr *expr[MAX_PREMISES];   //Internal logical representation of the premises
+
+    //Game status
+    GameRule *rule;
+};
+typedef struct GameBoard GameBoard;
 
 #endif
