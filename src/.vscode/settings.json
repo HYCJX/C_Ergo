@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "gameboard.h": "c",
-        "gamedeclaration.h": "c"
-    }
-}

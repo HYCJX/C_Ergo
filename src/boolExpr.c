@@ -115,7 +115,8 @@ BoolExpr *newVariableExpr(const char name)
 }
 
 //Free the memory that stores a BoolExpr deeply.
-void freeBoolExpr(BoolExpr *expr) {
+void freeBoolExpr(BoolExpr *expr)
+{
     if (expr != NULL) {
         freeBoolExpr(expr->rightExpr);
         freeBoolExpr(expr->leftExpr);
