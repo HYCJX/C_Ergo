@@ -1,21 +1,16 @@
-//
-// Created by zy7218 on 14/06/19.
-//
+#ifndef _PLAYER_
+#define _PLAYER_
 
-#ifndef CERGO_PLAYER_H
-#define CERGO_PLAYER_H
-
-#include "cardCollection.h"
+#include <stdlib.h>
 #include <stdio.h>
-
-Player *newPlayer(char variable);
-
-Player *clonePlayer(Player *player);
-
-void swapCardsInHand(Player *player, int i1, int i2);
-
-int findCardInHand(Player *player, insOpcode opcode);
+#include "cardCollection.h"
 
 bool drawCard(Deck *deck, Player *player, int num);
 
-#endif //CERGO_PLAYER_H
+Player *clonePlayer(Player *player);
+
+Player *newPlayer(char variable);
+
+void swapCardsInHand(Player *player, int i1, int i2);
+
+#endif
