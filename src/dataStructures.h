@@ -12,8 +12,6 @@
 #define MAX_PREMISE_LENGTH (64)
 #define NUM_OF_CARD_TYPE (13)
 
-/*---------The Fundamentals---------*/
-
 /*-----Enumerations-----*/
 
 enum CardType {

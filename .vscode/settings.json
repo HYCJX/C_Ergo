@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "player.h": "c",
-        "cardcollection.h": "c"
+        "cardcollection.h": "c",
+        "datastructures.h": "c"
     }
 }

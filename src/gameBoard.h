@@ -1,8 +1,10 @@
 #ifndef _GAME_BOARD_
 #define _GAME_BOARD_
 
-#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "card.h"
 #include "player.h"
 #include "premise.h"
@@ -10,28 +12,26 @@
 #include "gameRule.h"
 #include "IOUtils.h"
 
-GameBoard* newBoard(GameRule *rule, int playerNum);
-
-GameBoard* cloneBoard(GameBoard *source);
+bool buildExprFromPremises(GameBoard *board);
 
 bool drawCard(Deck *deck, Player *player, int num);
 
-//bool isGameTerminated(GameBoard *board);
-
-bool buildExprFromPremises(GameBoard *board);
-
 bool execCommand(GameBoard *board, Player *player, char **tokens, bool *isTerminated);
+
+GameBoard *cloneBoard(GameBoard *source);
+
+GameBoard *newBoard(GameRule *rule, int playerNum);
 
 void dispose(GameBoard *board, Player *player);
 
+void extractScores(GameBoard *board, int *dest);
+
 void finalEval(GameBoard *board);
+
+void freeBoard(GameBoard *board);
 
 void startNewRound(GameBoard *board);
 
 void updateScores(GameBoard *board, const int source[MAX_PLAYERS]);
-
-void extractScores(GameBoard *board, int *dest);
-
-void freeBoard(GameBoard *board);
 
 #endif

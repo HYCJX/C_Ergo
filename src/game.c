@@ -1,13 +1,6 @@
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdio.h>
-
 #include "game.h"
 
-bool isGameTerminated(const int scoreBoard[4], int vicPt) {
+static bool isGameTerminated(const int scoreBoard[4], int vicPt) {
     for (int i = 0; i < MAX_PLAYERS; i++) {
         if (scoreBoard[i] >= vicPt) {
             return true;
