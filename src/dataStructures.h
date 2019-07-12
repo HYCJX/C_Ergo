@@ -124,15 +124,15 @@ typedef struct Premise Premise;
 struct GameBoard {
 
     //Two counters:
-    int numOfPlayers;
     int discardIndex;
+    int numOfPlayers;
 
-    //Four objects
+    //Five objects
     Card *discardPile[256];         //1. Discarded cards
     Deck *deck;                     //2. Undrawn cards
     Player *player[4];              //3. Players
     Premise *premise[MAX_PREMISES]; //4. Logical expressions
-    BoolExpr *expr[MAX_PREMISES];   //Internal logical representation of the premises
+    BoolExpr *expr[MAX_PREMISES];   //5. Internal logical representation of the premises
 
     //Game status
     GameRule *rule;

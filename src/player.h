@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include "cardCollection.h"
 
-bool drawCard(Deck *deck, Player *player, int num);
-
 Player *clonePlayer(Player *player);
 
 Player *newPlayer(char variable);

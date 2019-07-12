@@ -1,17 +1,5 @@
 #include "player.h"
 
-//Apply the effects of drawing a Card on a Player and the Deck.
-//Return true if the Deck isn't empty.
-bool drawCard(Deck *deck, Player *player, int num)
-{
-    for (int i = 0; i < num; i++) {
-        Card *card = drawOneCard(deck);
-        player->hand[player->handCtr] = card;
-        player->handCtr++;
-    }
-    return deck->size > 0;
-}
-
 //Return a new deeply cloned Player of @param player.
 Player *clonePlayer(Player *player)
 {

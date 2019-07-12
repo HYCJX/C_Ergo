@@ -5,12 +5,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "card.h"
-#include "player.h"
-#include "premise.h"
-#include "cardCollection.h"
+#include <ctype.h>
+#include <string.h>
+#include "gameBoardUtils.h"
 #include "gameRule.h"
-#include "IOUtils.h"
+#include "player.h"
 
 bool buildExprFromPremises(GameBoard *board);
 
@@ -29,8 +28,6 @@ void extractScores(GameBoard *board, int *dest);
 void finalEval(GameBoard *board);
 
 void freeBoard(GameBoard *board);
-
-void startNewRound(GameBoard *board);
 
 void updateScores(GameBoard *board, const int source[MAX_PLAYERS]);
 

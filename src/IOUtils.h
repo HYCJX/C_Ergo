@@ -20,6 +20,8 @@ char inputSingleChar(const char *reminder);
 
 void clearScreen();
 
+void countDown();
+
 void pauseBeforeSwitchTurn(GameBoard *board, Player *player, int time);
 
 void printBoardtoPlayer(GameBoard *board, Player *player);

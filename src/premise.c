@@ -86,7 +86,7 @@ static BoolExpr *buildHelper(Premise *premise, int start, int end, bool *valid)
                     if (nextCardType == VAR || nextCardType == WILD_VAR || nextCardType == PAREN) {
                         return newExpr(NOT,
                                        buildHelper(premise, indexOfOp + 1, end, valid),
-                                //Does not matter what to put on the rhs but just in case.
+                                        //Does not matter what to put on the rhs but just in case.
                                        newTrueExpr());
                     }
                 }
@@ -104,12 +104,13 @@ static BoolExpr *buildHelper(Premise *premise, int start, int end, bool *valid)
         }
     }
     //Error handling
-    // printf("Invalid premise!\n");
+    //printf("Invalid premise!\n");
     *valid = false;
     return newDummyExpr();
 }
 
-//Build boolean expression from premise if possible and store the evaluated boolExpr into the dest.
+//Build and return boolean expression from premise if possible.
+//@param valid stores whether the Premise is valid.
 //Return a dummy expression if the expression cannot be build (premise is not valid).
 BoolExpr *buildBoolExpr(Premise *premise, bool *valid)
 {
@@ -180,7 +181,7 @@ Premise *newPremise(void)
     return premise;
 }
 
-//Free the space that stores a Premise freely.
+//Free the space that stores a Premise deeply.
 void freePremise(Premise *premise)
 {
     if (premise == NULL) return;
