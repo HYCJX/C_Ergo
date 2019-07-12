@@ -4,9 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdint.h>
-#include <ctype.h>
-#include <string.h>
 #include "gameBoardUtils.h"
 #include "gameRule.h"
 #include "player.h"

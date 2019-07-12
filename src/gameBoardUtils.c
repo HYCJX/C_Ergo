@@ -16,7 +16,6 @@ static bool isOpcodeCard(insOpcode opcode, Card *card)
         case OP_WD:
         case OP_WVJUST:
             return (card->type == WILD_VAR);
-//                   && card->CardAs.varName == (opcode + ('A' - OP_WA));
         case OP_NOT:
         case OP_AND:
         case OP_OR:
@@ -30,7 +29,6 @@ static bool isOpcodeCard(insOpcode opcode, Card *card)
         case OP_WIMP:
         case OP_WOPJUST:
             return (card->type == WILD_OP);
-//                   && card->CardAs.op == (opcode - (OP_WNOT - NOT));
         case OP_TR:
             return (card->type == TABULA_RASA);
         case OP_REV:
@@ -69,7 +67,9 @@ static int findCardInHand(Player *player, insOpcode opcode)
     return FIND_FAIL;
 }
 
-/*----- */
+/*-----Six Command Types-----*/
+
+//1.
 bool execDirectPut(GameBoard *board, Player *player, insOpcode opcode, int premiseId, int index)
 {
     if (premiseId >= MAX_PREMISES || premiseId < 0) {
@@ -85,7 +85,7 @@ bool execDirectPut(GameBoard *board, Player *player, insOpcode opcode, int premi
         return false;
     }
     Card *play = player->hand[cardIndex];
-    // parens & wilds handling
+    //Parenthese and Wild cards handling:
     switch (opcode) {
         case OP_PAL:
             play->CardAs.isLeft = true;
@@ -118,6 +118,7 @@ bool execDirectPut(GameBoard *board, Player *player, insOpcode opcode, int premi
     return false;
 }
 
+//2.
 bool execDiscard(GameBoard *board, Player *player, insOpcode opcode)
 {
     int cardIndex = findCardInHand(player, opcode);
@@ -133,6 +134,7 @@ bool execDiscard(GameBoard *board, Player *player, insOpcode opcode)
     return false;
 }
 
+//3.
 bool execFallacy(GameBoard *board, Player *playerFrom, Player *playerTo)
 {
     int cardIndex = findCardInHand(playerFrom, OP_FAL);
@@ -149,6 +151,7 @@ bool execFallacy(GameBoard *board, Player *playerFrom, Player *playerTo)
     return false;
 }
 
+//4.
 bool execImmediate(GameBoard *board, Player *player, insOpcode opcode, bool *isTerminated)
 {
     int cardIndex = findCardInHand(player, opcode);
@@ -162,15 +165,14 @@ bool execImmediate(GameBoard *board, Player *player, insOpcode opcode, bool *isT
                 printf("You cannot justify yourself without being fallacied!\n");
                 return false;
             }
-            // reset fallacy counter
+            //Reset fallacy counter:
             player->fallacyCtr = 0;
             player->isJustified = true;
             play->isDisposed = true;
             printf("You have justified yourself! You are now immune to fallacies!\n");
             return true;
         } else if (opcode == OP_ERGO) {
-            //ergo
-            // check if all vars are present
+            //Check if all variables are present:
             for (char c = 'A'; c <= 'D'; c++) {
                 bool isPresent = false;
                 for (int i = 0; i < MAX_PREMISES; i++) {
@@ -179,7 +181,6 @@ bool execImmediate(GameBoard *board, Player *player, insOpcode opcode, bool *isT
                         Card *card = p->card[j];
                         if ((card->type == VAR || card->type == WILD_VAR)
                             && card->CardAs.varName == c) {
-
                             isPresent = true;
                         }
                     }
@@ -192,7 +193,6 @@ bool execImmediate(GameBoard *board, Player *player, insOpcode opcode, bool *isT
             play->isDisposed = true;
             *isTerminated = true;
             return true;
-
         } else {
             printf("Not an immediate instruction!\n");
             return false;
@@ -201,6 +201,7 @@ bool execImmediate(GameBoard *board, Player *player, insOpcode opcode, bool *isT
     return false;
 }
 
+//5.
 bool execRevolution(GameBoard *board, Player *player, int premiseId1, int index1, int premiseId2, int index2)
 {
     if (premiseId1 < 0 || premiseId1 > 3 || premiseId2 < 0 || premiseId2 > 3) {
@@ -221,6 +222,7 @@ bool execRevolution(GameBoard *board, Player *player, int premiseId1, int index1
     return false;
 }
 
+//6.
 bool execTabulaRasa(GameBoard *board, Player *player, int premiseId, int index)
 {
     if (premiseId < 0 || premiseId >= MAX_PREMISES) {

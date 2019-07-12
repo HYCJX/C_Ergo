@@ -89,17 +89,6 @@ struct Deck {
 };
 typedef struct Deck Deck;
 
-//Rule status
-struct GameRule {
-    bool allowDoubleNeg;
-    bool allowParadoxVictory;
-    int fallacyPenalty;
-    int switchPauseDuration;
-    int victoryPoint;
-    int key[NUM_OF_CARD_TYPE];
-};
-typedef struct GameRule GameRule;
-
 //Game players
 struct Player {
     bool isJustified;
@@ -119,7 +108,18 @@ struct Premise {
 };
 typedef struct Premise Premise;
 
-/*---Highest level*/
+/*---Highest levels---*/
+
+//Rule status
+struct GameRule {
+    bool allowDoubleNeg;
+    bool allowParadoxVictory;
+    int fallacyPenalty;
+    int switchPauseDuration;
+    int victoryPoint;
+    int key[NUM_OF_CARD_TYPE];
+};
+typedef struct GameRule GameRule;
 
 struct GameBoard {
 

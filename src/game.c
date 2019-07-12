@@ -10,160 +10,125 @@ static bool isGameTerminated(const int scoreBoard[4], int vicPt) {
 }
 
 int main(void) {
+    
+    /*---Preparation Phase---*/
 
     clearScreen();
-
     char c;
     do {
         c = inputSingleChar("Please input number of players[1 - 4]:\n");
     } while (c <= '0' || c > '4');
     int numOfPlayers = c - '0';
-
-    //Init
+    //Initilization:
     GameRule *rule = newGameRule();
     int scoreBoard[4] = {0, 0, 0, 0};
-    // set rule
+    //Set rule:
     clearScreen();
     setGameRule(rule);
-
-//    // confirm start
+    //Confirm start
     printf("\n====Initialization successful====\n");
-    //next round confirm:
+    //Next round confirm:
     printf("    Press ENTER to start: \n");
     getchar();
     printf("\n");
 
-//    printf("%d\n", board->numOfPlayers);
-    //Game Phase
+    /*---Game Phase---*/
+
     bool isForceQuit = false;
 
     while (!isGameTerminated(scoreBoard, rule->victoryPoint) && !isForceQuit) {
-
-        // init new board
+        //Initialize new gameBoard:
         GameBoard *board = newBoard(rule, numOfPlayers);
-        // update score to board
+        //Update score to board:
         updateScores(board, scoreBoard);
-
-        //Opening draw
+        //Opening draw:
         for (int i = 0; i < numOfPlayers; i++) {
             drawCard(board->deck, board->player[i], OPENING_DRAW);
         }
         bool isRoundTerminated = false;
         int playerIndex = 0;
-
-
-        // each player's turn
+        //Each player's turn:
         while (!isRoundTerminated) {
             Player *currPlayer = board->player[playerIndex];
-            //turn draw
+            //Turn draw:
             drawCard(board->deck, currPlayer, TURN_DRAW);
-
             clearScreen();
             pauseBeforeSwitchTurn(board, currPlayer, rule->switchPauseDuration);
-
-            // create temporary view of board
+            //Create temporary view of gameBoard
             GameBoard *view = NULL;
-
-            // continuously re-run this tun if the view is not well-formed at the end of the turn.
+            //Continuously re-run this tun if the view is not well-formed at the end of the turn:
             while (true) {
                 freeBoard(view);
                 view = cloneBoard(board);
                 Player *viewPlayer = view->player[playerIndex];
-
-                //print board
+                //Print gameBoard:
                 printBoardtoPlayer(view, viewPlayer);
-                //Take 2 action
+                //Take 2 actions:
                 int numOfValidActions = 0;
-
-                // Each turn
+                //Each turn:
                 while (numOfValidActions < TURN_DRAW && !isRoundTerminated) {
-
                     bool isValidExec;
-                    // repeat exec
+                    //Repeat execution:
                     do {
-
                         printFalIfAvaliable(viewPlayer);
-                        //fetch instruction from cmdline
+                        //Fetch the instruction from cmdline.
                         printf("Player [%c], Input your command:\n", viewPlayer->chosenVar);
                         size_t size = 128;
                         char *instruction = malloc(sizeof(char) * size);
                         fgets(instruction, size, stdin);
-                        //tokenize instruction
+                        //Tokenize the instruction:
                         char **tokens = tokenize(instruction);
                         free(instruction);
-
                         clearScreen();
-
-                        //repeatedly execute action until valid
+                        //Repetitively execute action until valid:
                         isValidExec = execCommand(view, viewPlayer, tokens, &isRoundTerminated);
-
-                        //reprint after execution
+                        //Reprint after execution:
                         printBoardtoPlayer(view, viewPlayer);
-
-                        //free tokens
+                        //Free tokens:
                         for (int k = 0; tokens[k]; k++) {
                             free(tokens[k]);
                         }
                         free(tokens);
-
                     } while (!isValidExec);
                     numOfValidActions++;
-
-                    //reprint
+                    //Reprint:
                     clearScreen();
                     printBoardtoPlayer(view, viewPlayer);
-
                 }
-
-                //dispose
+                //Dispose:
                 dispose(view, viewPlayer);
-
+                //Check Premises:
                 bool isWellFormed = buildExprFromPremises(view);
                 if (isWellFormed) {
-
                     break;
-
                 } else {
-
                     clearScreen();
                     printf("!Premises are not well formed! Restart this turn!\n");
-
                 }
-
             }
-
-            // update fallacy counter
+            //Update fallacy counter:
             if (view->player[playerIndex]->fallacyCtr != 0) {
                 view->player[playerIndex]->fallacyCtr += (view->player[playerIndex]->fallacyCtr > 0) ? -1 : 1;
             }
-
-            //update view to main board.
+            //Update view to main board:
             freeBoard(board);
             board = view;
-
             isRoundTerminated |= (board->deck->size == 0);
-
-            //end round if round terminates
+            //End round if round terminates:
             if (isRoundTerminated) {
                 break;
             }
-
-            //update playerIndex
+            //Update playerIndex
             playerIndex++;
             playerIndex = playerIndex >= board->numOfPlayers ? 0 : playerIndex;
 
         }
-
-        // update scores
+        //Update scores:
         finalEval(board);
         printScoreBoard(board);
-
         extractScores(board, scoreBoard);
-
         freeBoard(board);
-
-
-        //next round confirm:
+        //Next round confirm:
         char yn;
         do {
             yn = (char) toupper(inputSingleChar("Continue playing? [Y / n]:\n"));
@@ -172,7 +137,8 @@ int main(void) {
         isForceQuit = (yn == 'N');
 
     }
-    //End Phase
+
+    /*---End Phase---*/
 
     printf("#==================================#\n");
     printf("            Final Result\n");
@@ -182,10 +148,7 @@ int main(void) {
                scoreBoard[i] >= rule->victoryPoint ? "Victory!" : "Defeat");
     }
     printf("#==================================#\n");
-
-    // end-game free
+    //End-game free
     free(rule);
-
-
     return EXIT_SUCCESS;
 }

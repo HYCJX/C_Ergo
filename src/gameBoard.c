@@ -120,22 +120,22 @@ static insOpcode getInsOpcode(char *str)
     return OP_END;
 }
 
+//Execute all six command types:
 bool execCommand(GameBoard *board, Player *player, char **tokens, bool *isTerminated)
 {
     insOpcode opcode = getInsOpcode(tokens[0]);
     int numOfArgs = 0;
     for (numOfArgs = 0; tokens[numOfArgs]; numOfArgs++);
-
-    //fallacy check
+    //Fallacy check:
     if (player->fallacyCtr > 0
         && !isJustificationOpcode(opcode) && !isUtilOpcode(opcode)) {
         printf("You cannot play any cards other than justifications when you have a fallacy!\n");
         return false;
     }
-
-    if (opcode <= OP_PAR) { //All opcodes less than par are direct put
+    //DirectPut:
+    if (opcode <= OP_PAR) { //All opcodes less than parenthese are directPuts.
         if (numOfArgs == 1) {
-            // direct put onto the first empty premise.
+            //Directly put onto the first empty premise.
             for (int i = 0; i < MAX_PREMISES; i++) {
                 if (board->premise[i]->size == 0) {
 
@@ -145,9 +145,8 @@ bool execCommand(GameBoard *board, Player *player, char **tokens, bool *isTermin
             printf("No more empty premises left!\n");
             return false;
         }
-
         if (numOfArgs == 2) {
-            // direct put to the end of the given premise.
+            //Directly put to the end of the given premise.
             int index = 0;
             if (parseNumbers(&tokens[1], 1, &index)) {
                 if (index >= 0 && index < MAX_PREMISES) {
@@ -157,24 +156,20 @@ bool execCommand(GameBoard *board, Player *player, char **tokens, bool *isTermin
                 }
             }
             return false;
-
         }
-
         if (numOfArgs == 3) {
             int num[numOfArgs - 1];
             if (!parseNumbers(&tokens[1], 2, num)) {
                 return false;
             }
-
             return execDirectPut(board, player, opcode, num[0], num[1]);
         }
         printf("Wrong number of arguments!\n");
         return false;
-
     }
+    //Tabula Rasa:
     if (opcode == OP_TR) {
         if (numOfArgs != 3) {
-
             printf("Wrong number of arguments!\n");
             return false;
         }
@@ -182,18 +177,16 @@ bool execCommand(GameBoard *board, Player *player, char **tokens, bool *isTermin
         if (!parseNumbers(&tokens[1], 2, num)) {
             return false;
         }
-
         if (num[0] >= 0 && num[0] < MAX_PREMISES) {
             return execTabulaRasa(board, player, num[0], num[1] - 1);
         }
-
         printf("Not a valid premise!\n");
         return false;
 
     }
+    //Revolution:
     if (opcode == OP_REV) {
         if (numOfArgs != 5) {
-
             printf("Wrong number of arguments!\n");
             return false;
         }
@@ -206,15 +199,14 @@ bool execCommand(GameBoard *board, Player *player, char **tokens, bool *isTermin
                 printf("Revolution on a single card? What ever possessed you?!\n");
                 return false;
             }
-
             return execRevolution(board, player, num[0], num[1] - 1, num[2], num[3] - 1);
         }
         printf("Invalid index\n");
         return false;
     }
+    //Fallacy:
     if (opcode == OP_FAL) {
         if (numOfArgs != 2) {
-
             printf("Wrong number of arguments!\n");
             return false;
         }
@@ -222,24 +214,22 @@ bool execCommand(GameBoard *board, Player *player, char **tokens, bool *isTermin
         if (strlen(target) == 1) {
             char c = (char) toupper(target[0]);
             if (c < 'A' || c > (board->numOfPlayers - 1 + 'A') || c == player->chosenVar) {
-
                 printf("Not a valid player!\n");
                 return false;
             }
             Player *toPlayer = board->player[c - 'A'];
-
             return execFallacy(board, player, toPlayer);
         }
     }
+    //Immediate:
     if (opcode == OP_ERGO || isJustificationOpcode(opcode)) {
         if (numOfArgs != 1) {
-
             printf("Wrong number of arguments!\n");
             return false;
         }
         return execImmediate(board, player, opcode, isTerminated);
     }
-
+    //Discard:
     if (opcode == OP_DISCARD) {
         if (numOfArgs > 2) {
             printf("Wrong number of arguments!\n");
@@ -250,35 +240,28 @@ bool execCommand(GameBoard *board, Player *player, char **tokens, bool *isTermin
             printf("Unable to discard!\n");
             return false;
         }
-
         return execDiscard(board, player, discard);
     }
-
+    //Help:
     if (opcode == OP_HELP) {
         if (numOfArgs != 1) {
             printf("Wrong number of arguments!\n");
             return false;
         }
-
-        // play easter egg!
+        //Play easter egg!
         easterEgg();
         // return false
         return false;
     }
-
+    //Sorthand:
     if (opcode == OP_SORTHAND) {
         if (numOfArgs != 1) {
             printf("Wrong number of arguments!\n");
             return false;
         }
-
-//        printf("Unsupported instruction sry!\n");
         sortHand(player->hand, player->handCtr, compareCard);
-//        printBoardtoPlayer(board, player);
         return false;
     }
-
-
     printf("Cannot find instruction!\n");
     return false;
 }
@@ -367,12 +350,12 @@ void extractScores(GameBoard *board, int *dest)
 
 void finalEval(GameBoard *board)
 {
-    //clear and reprint premise
+    //Clear and reprint the Premises:
     clearScreen();
     printf("#     End of this round!    #\n");
     printPremises(board);
     printf("- - - - - - - - - - - - - - -\n");
-
+    //Evaluate the Premises:
     int validAmount = 0;
     int score[4] = {0, 0, 0, 0};
     for (uint32_t code = 0b0000; code <= 0b1111; code++) {
@@ -380,7 +363,6 @@ void finalEval(GameBoard *board)
         for (int exprIndex = 0; exprIndex < MAX_PREMISES; exprIndex++) {
             areAllTrue &= evalBoolExpr(board->expr[exprIndex], code);
         }
-//        printf("with code: %d, premise is %d\n", code, evalRes);
         if (areAllTrue) {
             validAmount++;
             for (int i = 0; i < 4; i++) {
@@ -388,23 +370,21 @@ void finalEval(GameBoard *board)
             }
         }
     }
-
-    // calculate score
+    //Calculate available scores:
     int numOfCards = 0;
     for (int i = 0; i < MAX_PREMISES; i++) {
         numOfCards += board->premise[i]->size;
     }
-
-    if (validAmount == 0) {
+    //Calculate scores:
+    if (validAmount == 0) { //Paradox:
         printf("This game ends up being a paradox!\n");
         bool isVarOnPremises[4] = {false, false, false, false};
-
-        //exit if not allow paradox victory
+        //Exit if not allow paradox victory
         if (!board->rule->allowParadoxVictory) {
             return;
         }
-
-        // check if var is not on any premise
+        //Else:
+        //Check if variable is on any Premise:
         for (int i = 0; i < MAX_PREMISES; i++) {
             Premise *p = board->premise[i];
             for (int j = 0; j < p->size; j++) {
@@ -419,16 +399,14 @@ void finalEval(GameBoard *board)
                 }
             }
         }
-
+        //Announce paradox winner:
         for (char c = 'A'; c < ('A' + board->numOfPlayers); c++) {
             if (!isVarOnPremises[c - 'A']) {
                 printf("Player [%c] wins this round by paradox victory!\n", c);
                 board->player[c - 'A']->score += numOfCards;
             }
         }
-
-    } else {
-
+    } else { //Find the winner(s):
         bool isOneProven = false;
         for (char c = 'A'; c <= 'D'; c++) {
             if (score[c - 'A'] == validAmount) {
@@ -496,15 +474,13 @@ int main(void) {
    GameBoard *board = newBoard(rule, 4);
    printBoardtoPlayer(board, board->player[0]);
    drawCard(board->deck, board->player[0], 7);
-//    printf("player->hand0, %s\n", board->player[0]->hand[0] ? "NOT NULL" : "NULL");
+   //printf("player->hand0, %s\n", board->player[0]->hand[0] ? "NOT NULL" : "NULL");
    printBoardtoPlayer(board, board->player[0]);
    execDirectPut(board, board->player[0], OP_C, 0, 0);
    execDirectPut(board, board->player[0], OP_PAL, 0, 1);
    dispose(board, board->player[0]);
    printBoardtoPlayer(board, board->player[0]);
-
    printf("Board is %s !\n", buildExprFromPremises(board) ? "valid" : "invalid");
-
    return 0;
 }
 */
